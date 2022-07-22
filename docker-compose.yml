@@ -1,0 +1,42 @@
+version: "3.8"
+services:
+
+  mysql:
+    image: mysql
+    container_name: mysql
+    ports:
+      - 3306:3306
+      - 33060:33060
+    environment:  
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=bootdb
+    networks:
+      - qm-network
+
+  stockmanager:
+    image: lucasvilela/stock-manager
+    container_name: stockmanager
+    ports:
+      - 8080:8080
+    networks:
+      - qm-network
+
+  quotationmanagement:
+    image: quotation-manegement:0.1.0
+    container_name: quotation-manegement
+    ports:
+      - 8081:8081
+    environment:
+      - MYSQL_CONTAINER=mysql
+      - STOCK_MANAGER_CONTAINER=stockmanager
+      - QUOTATION_MANAGER_CONTAINER=quotation-manegement
+      - SPRING_PROFILES_ACTIVE=prod 
+    networks:
+      - qm-network
+    depends_on:
+      - stockmanager
+      - mysql
+
+networks:     
+  qm-network:
+    driver: bridge                    
